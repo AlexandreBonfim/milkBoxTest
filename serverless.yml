@@ -19,12 +19,12 @@ provider:
 
 functions:
   create:
-    handler: dist/functions/create.create
+    handler: dist/index.createHandler
     events:
       - http:
           path: newTodo
           method: post
-          cors: true      
+          cors: true
 
 resources:
   Resources:
