@@ -1,11 +1,11 @@
 import getErrorResponse from './helpers/errorHandler';
-import { create } from './services';
+import { createTodo, getTodo } from './services';
 
 exports.createHandler = async (event) => {
   if (event){
     if (event.httpMethod !== 'POST') {
         console.error(`newTodo path only accept POST method, you tried: ${event.httpMethod}`);
-        return getErrorResponse(`newTodo path only accept POST method, you tried: ${event.httpMethod}`);
+        return getErrorResponse(400, `newTodo path only accept POST method, you tried: ${event.httpMethod}`);
     }
 
     // All log statements are written to CloudWatch
@@ -16,13 +16,39 @@ exports.createHandler = async (event) => {
 
     if (todo === undefined) {
       console.info('Missing parameters.');
-      return getErrorResponse('Missing parameters.');
+      return getErrorResponse(400, 'Missing parameters.');
     }
 
-    return await create(todo);
+    return await createTodo(todo);
 
   } else {
     console.error('Failed, missing event.');
-    return getErrorResponse('Missing event.');
+    return getErrorResponse(400, 'Missing event.');
+  }
+};
+
+exports.getHandler = async (event) => {
+   if (event){
+    if (event.httpMethod !== 'GET') {
+        console.error(`getTodo path only accept GET method, you tried: ${event.httpMethod}`);
+        return getErrorResponse(400, `getTodo path only accept GET method, you tried: ${event.httpMethod}`);
+    }
+
+    // All log statements are written to CloudWatch
+    console.info('received:', event);
+
+    // Get id
+    const id = event.pathParameters.id;
+
+    if (id === undefined) {
+      console.info('Missing parameter.');
+      return getErrorResponse(400, 'Missing parameter.');
+    }
+
+    return await getTodo(id);
+
+  } else {
+    console.error('Failed, missing event.');
+    return getErrorResponse(400, 'Missing event.');
   }
 };

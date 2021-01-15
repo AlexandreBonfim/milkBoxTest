@@ -26,6 +26,14 @@ functions:
           method: post
           cors: true
 
+  get:
+    handler: dist/index.getHandler
+    events:
+      - http:
+          path: getTodo/{id}
+          method: get
+          cors: true
+
 resources:
   Resources:
     TodosDynamoDbTable:

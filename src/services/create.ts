@@ -27,7 +27,7 @@ const dynamoDb = new DynamoDB.DocumentClient()
 
     // create a response
     const response = {
-          statusCode: 200,
+          statusCode: 201,
           body: JSON.stringify(params.Item)
     };
 
@@ -37,6 +37,6 @@ const dynamoDb = new DynamoDB.DocumentClient()
     return response;
   } catch (err) {
     console.error(err);
-    return getErrorResponse(err.message);
+    return getErrorResponse(500, err.message); //@todo: tru to check if err has code.
   }
 }
