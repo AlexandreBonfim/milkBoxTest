@@ -1,4 +1,10 @@
-import { createTodo, getTodo, getTodoList, updateTodo } from './services';
+import {
+  createTodo,
+  getTodo,
+  getTodoList,
+  updateTodo,
+  removeTodo
+} from './services';
 import getErrorResponse from './helpers/errorHandler';
 
 // Routes
@@ -94,6 +100,33 @@ exports.updateHandler = async (event) => {
     }
 
     return await updateTodo(id, todo);
+
+  } else {
+    console.error('Failed, missing event.');
+    return getErrorResponse(400, 'Missing event.');
+  }
+};
+
+exports.deleteHandler = async (event) => {
+
+   if (event){
+    if (event.httpMethod !== 'DELETE') {
+        console.error(`deleteTodo path only accept DELETE method, you tried: ${event.httpMethod}`);
+        return getErrorResponse(400, `deleteTodo path only accept DELETE method, you tried: ${event.httpMethod}`);
+    }
+
+    // All log statements are written to CloudWatch
+    console.info('received:', event);
+
+    // Get id
+    const id = event.pathParameters.id;
+
+    if (id === undefined) {
+      console.info('Missing parameter.');
+      return getErrorResponse(400, 'Missing parameter.');
+    }
+
+    return await removeTodo(id);
 
   } else {
     console.error('Failed, missing event.');

@@ -1,9 +1,16 @@
 import { DynamoDB } from 'aws-sdk';
+import { default as getTodo } from './get';
 import getErrorResponse from '../helpers/errorHandler';
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
- export default async function get(id: string) {
+ export default async function remove(id: string) {
+  // Check if todo exist
+  if (await getTodo(id) === null) {
+      console.error('Couldn\'t fetch the todo item');
+      return getErrorResponse(404, 'Couldn\'t fetch the todo item');
+  }
+
   try {
     // Get the item from the table
     const params = {
@@ -11,20 +18,15 @@ const dynamoDb = new DynamoDB.DocumentClient()
       Key: { id: id },
     };
 
-    // create a response
-    const response = await dynamoDb.get(params).promise();
-
-    if (response.Item === undefined) {
-      console.error('Couldn\'t fetch the todo item');
-      return getErrorResponse(404, 'Couldn\'t fetch the todo item');
-    }
+    // delete the todo from the database
+    await dynamoDb.delete(params).promise();
 
     // All log statements are written to CloudWatch
-    console.info('Query succeeded', response.Item);
+    console.info('Delete succeeded');
 
     return {
       statusCode: 200,
-      body: JSON.stringify(response.Item)
+      body: JSON.stringify({})
     };
   } catch (err) {
     console.error(err);

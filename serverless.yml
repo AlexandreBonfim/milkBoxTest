@@ -50,6 +50,14 @@ functions:
           method: put
           cors: true
 
+  delete:
+    handler: dist/index.deleteHandler
+    events:
+      - http:
+          path: deleteTodo/{id}
+          method: delete
+          cors: true
+
 resources:
   Resources:
     TodosDynamoDbTable:
