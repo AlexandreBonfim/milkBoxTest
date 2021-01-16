@@ -3,30 +3,29 @@ import getErrorResponse from '../helpers/errorHandler';
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
- export default async function get(id) {
+ export default async function get(id: string) {
   try {
     // Get the item from the table
-    var params = {
+    const params = {
       TableName : process.env.DYNAMODB_TABLE,
       Key: { id: id },
     };
 
-    const result = await dynamoDb.get(params).promise();
+    // create a response
+    const response = await dynamoDb.get(params).promise();
 
-    if (result.Item === undefined) {
-      return getErrorResponse(404, 'Couldn\'t fetch the todo item.');
+    if (response.Item === undefined) {
+      console.error('Couldn\'t fetch the todo items');
+      return getErrorResponse(404, 'Couldn\'t fetch the todo item');
     }
 
-    // create a response
-    const response = {
-          statusCode: 200,
-          body: JSON.stringify(result.Item)
-    };
-
     // All log statements are written to CloudWatch
-    console.info(response);
+    console.info('Query succeeded', response.Item);
 
-    return response;
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response.Item)
+    };
   } catch (err) {
     console.error(err);
     return getErrorResponse(500, err.message);

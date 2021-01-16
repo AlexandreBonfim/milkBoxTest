@@ -30,7 +30,15 @@ functions:
     handler: dist/index.getHandler
     events:
       - http:
-          path: getTodo/{id}
+          path: todo/{id}
+          method: get
+          cors: true
+
+  list:
+    handler: dist/index.getListHandler
+    events:
+      - http:
+          path: todoList
           method: get
           cors: true
 

@@ -1,6 +1,7 @@
+import { createTodo, getTodo, getTodoList } from './services';
 import getErrorResponse from './helpers/errorHandler';
-import { createTodo, getTodo } from './services';
 
+// Routes
 exports.createHandler = async (event) => {
   if (event){
     if (event.httpMethod !== 'POST') {
@@ -51,4 +52,19 @@ exports.getHandler = async (event) => {
     console.error('Failed, missing event.');
     return getErrorResponse(400, 'Missing event.');
   }
+};
+
+exports.getListHandler = async (event) => {
+  if (event.httpMethod !== 'GET') {
+      console.error(`getTodoList path only accept GET method, you tried: ${event.httpMethod}`);
+      return getErrorResponse(400, `getTodoList path only accept GET method, you tried: ${event.httpMethod}`);
+  }
+
+  // All log statements are written to CloudWatch
+  console.info('received:', event);
+
+  const pageSize = event.queryStringParameters.pageSize;
+  const lastItemId = event.queryStringParameters.lastItemId;
+
+  return await getTodoList(pageSize, lastItemId);
 };
