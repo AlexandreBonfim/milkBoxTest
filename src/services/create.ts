@@ -25,16 +25,13 @@ const dynamoDb = new DynamoDB.DocumentClient()
     // write the todo to the database
     await dynamoDb.put(params).promise();
 
-    // create a response
-    const response = {
-          statusCode: 200,
-          body: JSON.stringify(params.Item)
-    };
-
     // All log statements are written to CloudWatch
-    console.info(response);
+    console.info('Post succeeded', params.Item);
 
-    return response;
+    return {
+      statusCode: 201,
+      body: JSON.stringify(params.Item)
+    };
   } catch (err) {
     console.error(err);
     return getErrorResponse(500, err.message);

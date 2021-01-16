@@ -1,4 +1,4 @@
-import { createTodo, getTodo, getTodoList } from './services';
+import { createTodo, getTodo, getTodoList, updateTodo } from './services';
 import getErrorResponse from './helpers/errorHandler';
 
 // Routes
@@ -55,16 +55,48 @@ exports.getHandler = async (event) => {
 };
 
 exports.getListHandler = async (event) => {
-  if (event.httpMethod !== 'GET') {
-      console.error(`getTodoList path only accept GET method, you tried: ${event.httpMethod}`);
-      return getErrorResponse(400, `getTodoList path only accept GET method, you tried: ${event.httpMethod}`);
+  if (event){
+    if (event.httpMethod !== 'GET') {
+        console.error(`getTodoList path only accept GET method, you tried: ${event.httpMethod}`);
+        return getErrorResponse(400, `getTodoList path only accept GET method, you tried: ${event.httpMethod}`);
+    }
+
+    // All log statements are written to CloudWatch
+    console.info('received:', event);
+
+    const pageSize = event.queryStringParameters.pageSize;
+    const lastItemId = event.queryStringParameters.lastItemId;
+
+    return await getTodoList(pageSize, lastItemId);
+  } else {
+    console.error('Failed, missing event.');
+    return getErrorResponse(400, 'Missing event.');
   }
+};
 
-  // All log statements are written to CloudWatch
-  console.info('received:', event);
+exports.updateHandler = async (event) => {
+  if (event){
+    if (event.httpMethod !== 'PUT') {
+        console.error(`updateTodo path only accept PUT method, you tried: ${event.httpMethod}`);
+        return getErrorResponse(400, `updateTodo path only accept PUT method, you tried: ${event.httpMethod}`);
+    }
 
-  const pageSize = event.queryStringParameters.pageSize;
-  const lastItemId = event.queryStringParameters.lastItemId;
+    // All log statements are written to CloudWatch
+    console.info('received:', event);
 
-  return await getTodoList(pageSize, lastItemId);
+    // Get todo
+    const todo = JSON.parse(event.body);
+    const id = event.pathParameters.id;
+
+    if (todo === undefined) {
+      console.info('Missing body');
+      return getErrorResponse(400, 'Missing body');
+    }
+
+    return await updateTodo(id, todo);
+
+  } else {
+    console.error('Failed, missing event.');
+    return getErrorResponse(400, 'Missing event.');
+  }
 };
