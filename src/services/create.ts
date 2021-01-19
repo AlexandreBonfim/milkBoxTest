@@ -17,8 +17,8 @@ const dynamoDb = new DynamoDB.DocumentClient()
         id: uuid(),
         description: todo.description,
         isCompleted: false,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now())
       }
     }
 

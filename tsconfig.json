@@ -10,7 +10,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "test"
+    "__tests__"
   ],
   /* Module Resolution Options */
   "types": [                                  /* Type declaration files to be included in compilation. */

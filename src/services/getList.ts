@@ -18,11 +18,6 @@ const dynamoDb = new DynamoDB.DocumentClient()
 
     const result = await dynamoDb.scan(params).promise();
 
-    if (result.Items === undefined) {
-      console.error('Couldn\'t fetch the todo items');
-      return getErrorResponse(404, 'Couldn\'t fetch the todo items');
-    }
-
     // All log statements are written to CloudWatch
     console.info('Query succeeded', result);
 

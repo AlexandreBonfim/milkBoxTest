@@ -3,7 +3,8 @@ import getErrorResponse from '../helpers/errorHandler';
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
- export default async function update(id: number, todo) {
+ export default async function update(id: string, todo) {
+   console.log('todo', todo);
   // Validation
   if (typeof todo.description !== 'string' || typeof todo.isCompleted !== 'boolean') {
     console.error('Couldn\'t update the todo item');
@@ -28,6 +29,8 @@ const dynamoDb = new DynamoDB.DocumentClient()
       UpdateExpression: 'SET #todo_desc = :description, isCompleted = :isCompleted, updatedAt = :updatedAt',
       ReturnValues: 'ALL_NEW',
     };
+
+    console.log('tableName', params.TableName);
 
     // Update the todo in the database
     const response = await dynamoDb.update(params).promise();

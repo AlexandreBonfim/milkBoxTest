@@ -5,7 +5,7 @@ import getErrorResponse from '../helpers/errorHandler';
 const dynamoDb = new DynamoDB.DocumentClient()
 
  export default async function remove(id: string) {
-  // Check if todo exist
+  // Check if todo
   if (await getTodo(id) === null) {
       console.error('Couldn\'t fetch the todo item');
       return getErrorResponse(404, 'Couldn\'t fetch the todo item');
