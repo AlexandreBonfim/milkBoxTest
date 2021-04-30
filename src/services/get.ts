@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
-import getErrorResponse from '../helpers/errorHandler';
+import { responseHandler }from '../helpers';
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
@@ -16,18 +16,15 @@ const dynamoDb = new DynamoDB.DocumentClient()
 
     if (response.Item === undefined) {
       console.error('Couldn\'t fetch the todo item');
-      return getErrorResponse(404, 'Couldn\'t fetch the todo item');
+      return responseHandler.NotFound({ message: 'Couldn\'t fetch the todo item' });
     }
 
     // All log statements are written to CloudWatch
     console.info('Query succeeded', response.Item);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response.Item)
-    };
+    return responseHandler.Ok(response.Item);
   } catch (err) {
     console.error(err);
-    return getErrorResponse(500, err.message);
+    return responseHandler.Gateway(err.message);
   }
 }

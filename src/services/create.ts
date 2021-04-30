@@ -1,6 +1,6 @@
 import { uuid } from 'uuidv4';
 import { DynamoDB } from 'aws-sdk';
-import getErrorResponse from '../helpers/errorHandler';
+import { responseHandler }from '../helpers';
 
 // interface Request {
 //   description: string;
@@ -28,12 +28,9 @@ const dynamoDb = new DynamoDB.DocumentClient()
     // All log statements are written to CloudWatch
     console.info('Post succeeded', params.Item);
 
-    return {
-      statusCode: 201,
-      body: JSON.stringify(params.Item)
-    };
+    return responseHandler.Created(params.Item);
   } catch (err) {
     console.error(err);
-    return getErrorResponse(500, err.message);
+    return responseHandler.Gateway(err.message);
   }
 }

@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
-import getErrorResponse from '../helpers/errorHandler';
+import { responseHandler } from '../helpers';
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
@@ -7,7 +7,7 @@ const dynamoDb = new DynamoDB.DocumentClient()
   // Validation
   if (typeof todo.description !== 'string' || typeof todo.isCompleted !== 'boolean') {
     console.error('Couldn\'t update the todo item');
-    return getErrorResponse(400, 'Couldn\'t update the todo item');
+    return responseHandler.NotFound({ message: 'Couldn\'t update the todo item' });
   }
 
   try {
@@ -35,12 +35,9 @@ const dynamoDb = new DynamoDB.DocumentClient()
     // All log statements are written to CloudWatch
     console.info('Update succeeded', response.Attributes);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response.Attributes)
-    };
+    return responseHandler.Ok(response.Attributes);
   } catch (err) {
     console.error(err);
-    return getErrorResponse(500, err.message);
+    return responseHandler.Gateway(err.message);
   }
 }

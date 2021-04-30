@@ -6,6 +6,8 @@ provider:
   region: eu-central-1
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    AUTH_USERNAME: admin
+    AUTH_PASSWORD: admin
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -41,6 +43,14 @@ functions:
           path: todoList
           method: get
           cors: true
+          authorizer:
+            name: basicAuth
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            type: request
+
+  basicAuth:
+    handler: dist/helpers/index.auth
 
   update:
     handler: dist/index.updateHandler
@@ -76,3 +86,13 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+
+    GatewayResponse:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.WWW-Authenticate: "'Basic'"
+        ResponseType: UNAUTHORIZED
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        StatusCode: '401'

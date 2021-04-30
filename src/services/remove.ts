@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 import { default as getTodo } from './get';
-import getErrorResponse from '../helpers/errorHandler';
+import { responseHandler }from '../helpers';
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
@@ -8,7 +8,7 @@ const dynamoDb = new DynamoDB.DocumentClient()
   // Check if todo exist
   if (await getTodo(id) === null) {
       console.error('Couldn\'t fetch the todo item');
-      return getErrorResponse(404, 'Couldn\'t fetch the todo item');
+      return responseHandler.NotFound({ message: 'Couldn\'t fetch the todo item' });
   }
 
   try {
@@ -24,12 +24,9 @@ const dynamoDb = new DynamoDB.DocumentClient()
     // All log statements are written to CloudWatch
     console.info('Delete succeeded');
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({})
-    };
+    return responseHandler.Ok();
   } catch (err) {
     console.error(err);
-    return getErrorResponse(500, err.message);
+    return responseHandler.Gateway(err.message);
   }
 }
